@@ -1,0 +1,7 @@
+{
+  "imports": {
+    "jtd": "https://deno.land/x/jtd@v0.1.0/mod.ts",
+    "flags": "https://deno.land/std@0.97.0/flags/mod.ts",
+    "colors": "https://deno.land/std@0.97.0/fmt/colors.ts"
+  }
+}
