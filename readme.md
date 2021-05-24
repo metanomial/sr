@@ -13,4 +13,4 @@ $ deno install --allow-read --allow-write --import-map sr/import_map.json sr/cli
 
 ## License
 
-[MIT](LICENSE.txt)
+[MIT](license.txt)
