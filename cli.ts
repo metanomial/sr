@@ -17,17 +17,22 @@ if (options.version) {
 }
 
 if (options.help || !deckPath) {
-  console.log();
-  console.group(underline("Usage"));
-  console.log("$ srcards [options] <deck>");
-  console.log("Open a JSON deck");
-  console.groupEnd();
-  console.log();
-  console.group(underline("Options"));
-  console.log("--help, -h: Prints command usage.");
-  console.log("--version, -v: Prints command usage.");
-  console.groupEnd();
-  console.log();
+  logSections(
+    {
+      title: "Usage",
+      lines: [
+        "$ sr [options] <deck>",
+        "Opens a deck file for review.",
+      ],
+    },
+    {
+      title: "Options",
+      lines: [
+        "--help, -h: Prints command usage.",
+        "--version, -v: Prints command usage.",
+      ],
+    },
+  );
   Deno.exit(2);
 }
 
@@ -54,6 +59,23 @@ for (const card of review) {
 }
 
 Deno.exit(0);
+
+interface Section {
+  title: string;
+  lines: string[];
+}
+
+function logSections(...sections: Section[]) {
+  console.log();
+  for (const section of sections) {
+    console.group(underline(section.title));
+    for (const line of section.lines) {
+      console.log(line);
+    }
+    console.groupEnd();
+    console.log();
+  }
+}
 
 function isValid<T>(schema: JTD.Schema, instance: unknown): instance is T {
   return !JTD.validate(schema, instance).length;
