@@ -1,6 +1,7 @@
 import * as JTD from "jtd";
 import * as Flags from "flags";
 import { underline } from "colors";
+import { DB } from "sqlite";
 
 const DEFAULT_INTERVAL = 1;
 const DEFAULT_SCALAR = 1.3;
@@ -36,7 +37,9 @@ if (options.help || !deckPath) {
   Deno.exit(2);
 }
 
-const deck = loadDeck(deckPath);
+const deck = new DB(deckPath);
+deck.query();
+
 const review: Card[] = deck.cards.filter(due).sort(shuffle);
 
 console.log();
@@ -115,56 +118,4 @@ interface Card {
   back: string;
   lastReview?: string;
   interval?: number;
-}
-
-interface Deck {
-  title: string;
-  cards: Card[];
-}
-
-function loadDeck(deckPath: string): Deck {
-  let text: string;
-  let deck: unknown;
-  try {
-    text = Deno.readTextFileSync(deckPath);
-  } catch (error) {
-    console.error("Unable to read deck: " + error.message);
-    Deno.exit(1);
-  }
-  try {
-    deck = JSON.parse(text);
-  } catch (error) {
-    console.error("Deck JSON is invalid: " + error.message);
-    Deno.exit(1);
-  }
-  const schema: JTD.Schema = {
-    definitions: {
-      cards: {
-        properties: {
-          front: { type: "string" },
-          back: { type: "string" },
-        },
-        optionalProperties: {
-          lastReview: { type: "timestamp" },
-          interval: { type: "float32" },
-        },
-      },
-    },
-    properties: {
-      title: { type: "string" },
-      cards: {
-        elements: { ref: "cards" },
-      },
-    },
-  };
-  if (!isValid<Deck>(schema, deck)) {
-    console.error("Deck has format errors.");
-    Deno.exit(1);
-  }
-  return deck;
-}
-
-function saveDeck(deck: Deck, deckPath: string): void {
-  const text = JSON.stringify(deck);
-  Deno.writeTextFileSync(deckPath as string, text);
 }
